@@ -67,16 +67,19 @@ RunAll:
         SetTimer, RemoveTip, -3500
         return
     }
+; 3) COPY links (hash link = NO CACHE)
+tmp := A_Temp "\toitoi_head.txt"
+RunWait, %ComSpec% /c "cd /d C:\toitoitour-share && git rev-parse HEAD > ""%tmp%""",, Hide
+FileRead, head, %tmp%
+head := RegExReplace(head, "\s+", "")  ; trim
 
-    ; 3) COPY links (anti-cache)
-    ts := A_NowUTC
-
-    Clipboard =
+Clipboard =
 (
-https://raw.githubusercontent.com/autopflegemimo/toitoitour-share/main/MainActivity.kt?ts=%ts%
-https://raw.githubusercontent.com/autopflegemimo/toitoitour-share/main/MainActivity.meta.json?ts=%ts%
+https://raw.githubusercontent.com/autopflegemimo/toitoitour-share/%head%/MainActivity.kt
+https://raw.githubusercontent.com/autopflegemimo/toitoitour-share/main/MainActivity.kt
+https://raw.githubusercontent.com/autopflegemimo/toitoitour-share/main/MainActivity.meta.json
 )
-    ClipWait, 1
+ClipWait, 1
 
     ToolTip, UPDATED ✅ (GitHub)
     SetTimer, RemoveTip, -1500
