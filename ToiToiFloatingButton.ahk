@@ -40,23 +40,42 @@ return
 ;  MAIN ACTION (GitHub update)
 ; ===============================
 RunAll:
-    ; 1) COPY MainActivity.kt (VBS – silent)
-    RunWait, %copyVbs%,, Hide
-    Sleep, 300
-
-    ; 2) GIT add/commit/push (WAIT da završi)
-    if !FileExist(gitPushBat) {
-        ToolTip, ERROR: git_push.bat not found
-        SetTimer, RemoveTip, -2000
+    ; 0) sanity
+    if !FileExist(copyVbs) {
+        ToolTip, ERROR: copy_mainactivity_silent.vbs not found
+        SetTimer, RemoveTip, -2500
         return
     }
-  
-    RunWait, %ComSpec% /c ""%gitPushBat%"",, Hide
-    Sleep, 200
+    if !FileExist(gitPushBat) {
+        ToolTip, ERROR: git_push.bat not found
+        SetTimer, RemoveTip, -2500
+        return
+    }
 
-    ; 3) COPY GitHub RAW link (clipboard)
-    Clipboard :=
-    Clipboard := "https://raw.githubusercontent.com/autopflegemimo/toitoitour-share/main/MainActivity.kt"
+    ; 1) COPY MainActivity.kt (VBS – silent, WAIT)
+    RunWait, %copyVbs%,, Hide
+    if (ErrorLevel != 0) {
+        ToolTip, ERROR: copy failed (%ErrorLevel%)
+        SetTimer, RemoveTip, -3000
+        return
+    }
+
+    ; 2) GIT add/commit/push (WAIT)
+    RunWait, %ComSpec% /c ""%gitPushBat%"",, Hide
+    if (ErrorLevel != 0) {
+        ToolTip, ERROR: git_push failed (%ErrorLevel%)
+        SetTimer, RemoveTip, -3500
+        return
+    }
+
+    ; 3) COPY links (anti-cache)
+    ts := A_NowUTC
+
+    Clipboard =
+(
+https://raw.githubusercontent.com/autopflegemimo/toitoitour-share/main/MainActivity.kt?ts=%ts%
+https://raw.githubusercontent.com/autopflegemimo/toitoitour-share/main/MainActivity.meta.json?ts=%ts%
+)
     ClipWait, 1
 
     ToolTip, UPDATED ✅ (GitHub)
