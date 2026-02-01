@@ -1,5 +1,5 @@
 package com.example.toitoitour
-//////////////////////n1234
+//////////////////////
 import java.util.concurrent.TimeUnit
 import android.util.Log
 import android.location.Geocoder
