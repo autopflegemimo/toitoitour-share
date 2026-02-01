@@ -50,7 +50,11 @@ RunAll:
         SetTimer, RemoveTip, -2000
         return
     }
-
+      if (ErrorLevel != 0) {
+    ToolTip, ERROR: git push failed (%ErrorLevel%)
+    SetTimer, RemoveTip, -3000
+    return
+}
     RunWait, %ComSpec% /c ""%gitPushBat%"",, Hide
     Sleep, 200
 
